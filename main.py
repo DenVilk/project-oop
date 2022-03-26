@@ -22,7 +22,7 @@ class Phone(Device):
         self._os = os
 
     def __str__(self):
-        return f"{super().__str__()}, OS: {self._os}"
+        return f"{self.name}\n{super().__str__()}, OS: {self._os}"
 
 
 class Notebook(Device):
@@ -35,7 +35,7 @@ class Notebook(Device):
         self._os = os
 
     def __str__(self):
-        return f"{super().__str__()}, OS: {self._os}, Date of manufacturing: {self._dateOfManufacturing}"
+        return f"{self.name}\n{super().__str__()}, OS: {self._os}, Date of manufacturing: {self._dateOfManufacturing}"
 
 
 class TV(Device):
@@ -47,7 +47,7 @@ class TV(Device):
         self._diagonal = diagonal
 
     def __str__(self):
-        return f"{super().__str__()}, Diagonal: {self._diagonal}"
+        return f"{self.name}\n{super().__str__()}, Diagonal: {self._diagonal}"
 
 
 class Receipt:
@@ -68,11 +68,21 @@ class Receipt:
         return self._initials
 
     def __str__(self):
-        return f"Number of receipt: {self._num}, Type of product: {self._typeOfProduct}, Date of receiving: " \
-               f"{self._dateOfReceiving}, Date of repair: {self._dateOfRepair}, Initials: {self._initials}, Status: {self._status} "
+        return f"\nNumber of receipt: {self._num}\nType of product: {self._typeOfProduct}\nDate of receiving: " \
+               f"{self._dateOfReceiving}, Date of repair: {self._dateOfRepair}\nInitials: {self._initials}\nStatus: " \
+               f"{self._status}"
 
 
-receiptsdict = {}
+receiptsdict = {1: Receipt(1, Phone("Xiaomi", "Android", "MIUI is shit pls help"), "2022-02-24", "2022-02-26", "Antony",
+                           Receipt.listOfStatuses[2]),
+                2: Receipt(2, TV("Samsung", "27", "Screen is white"), "2022-03-05", "2022-03-11", "Andrey",
+                           Receipt.listOfStatuses[2]),
+                3: Receipt(3, Notebook("Asus", "Windows 11", "2012-03-02", "Doesn't start"), "2022-02-13", "2022-02-15",
+                           "Dmitry", Receipt.listOfStatuses[2]),
+                4: Receipt(4, TV("LG", 40, "Doesn't work"), "2021-04-25", "2021-04-30", "Vitaly",
+                           Receipt.listOfStatuses[2]),
+                5: Receipt(5, Phone("Samsung", "Android", "Works slowly"), "2021-07-15", "2021-07-17", "Max",
+                           Receipt.listOfStatuses[2])}
 
 
 def createrepairrequest():
@@ -120,10 +130,10 @@ def createrepairrequest():
 
 def receiptsprint(sw):
     if sw == 0:
-        for i, k in receiptsdict.items():
-            print(f"Receipt number: {i}, Info: {k}")
+        for k in receiptsdict.values():
+            print(k)
     elif sw > 0 and sw in receiptsdict.keys():
-        print(f"Receipt number: {sw}, Info: {receiptsdict.get(sw)}")
+        print(receiptsdict.get(sw))
 
 
 def receiptsinfo():
@@ -146,11 +156,11 @@ def receiptsinfo():
                 receiptsprint(i)
                 isfound = True
         if not isfound:
-            print("Receipts ordered with this initials are not found")
+            print("Receipts created with this initials are not found")
 
 
 def menu():
-    print("Choose an action:")
+    print("\nChoose an action:")
     print("1. Create repair request")
     print("2. Show info about receipt(s)")
     print("3. Print")
