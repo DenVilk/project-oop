@@ -2,7 +2,6 @@ import datetime
 import random
 
 
-
 class Device:
 
     def __init__(self, mark, description):
@@ -61,11 +60,19 @@ class Receipt:
         self._status = status
 
     listOfProducts = [Phone, Notebook, TV]
-    listOfStatuses = ["repairing", "done", "issued"]
+    listOfStatuses = ["Repairing", "Done", "Issued"]
+
+    # def __setattr__(self, key, value):
+    #     if key == 'self.status':
+    #         self._status = value
 
     @property
     def initials(self):
         return self._initials
+
+    # @property
+    # def dateofrepair(self):
+    #     return self._dateOfRepair
 
     def __str__(self):
         return f"\nNumber of receipt: {self._num}\nType of product: {self._typeOfProduct}\nDate of receiving: " \
@@ -127,6 +134,9 @@ def createrepairrequest():
 
     receiptsdict[num] = r
 
+    print("Your repair request is created succefully.")
+    print(f"Your receipt's number is: {num}")
+
 
 def receiptsprint(sw):
     if sw == 0:
@@ -136,8 +146,94 @@ def receiptsprint(sw):
         print(receiptsdict.get(sw))
 
 
+def administrationpanel():
+
+    _adminsdict = {"admin": ["password", "Ivanov Ivan Ivanovich"]}
+
+    login = input("Input login: ")
+    password = input("Input password: ")
+
+    if login in _adminsdict.keys() and _adminsdict.get(login)[0] == password:
+        print("Login is succesful.")
+        while True:
+            print("\nChoose action:")
+            print("\nActions with admins:")
+            print("  1. View admins list")
+            print("  2. Remove an admin from admins list")
+            print("  3. Add new admin")
+            print("\nActions with receipts:")
+            print("  4. Change repairing status")
+            print("  5. Change date of repair")
+            print("  6. View receipt information")
+
+            print("\n7. Exit")
+            sw = int(input())
+
+            if sw == 1:
+                viewadminslist(_adminsdict)
+
+            elif sw == 2:
+                removeadmin(_adminsdict)
+
+            elif sw == 3:
+                addadmin(_adminsdict)
+
+            elif sw == 4:
+                changerepairingstatus()
+
+            elif sw == 5:
+                changedateofrepair()
+
+            elif sw == 6:
+                num = int(input("Input receipt number: "))
+                receiptsprint(num)
+
+            elif sw == 7:
+                break
+
+    else:
+        print("Login and/or password is incorrect")
+
+
+def viewadminslist(_adminsdict):
+    c = 1
+    for i, k in _adminsdict.items():
+        print(f"{c}. Login: {i}, Password: {k[0]}, Initials: {k[1]}")
+        c += 1
+
+
+def removeadmin(_adminsdict):
+    c = int(input("Enter the number:"))
+    _adminsdict.pop(list(_adminsdict.keys())[c - 1])
+
+
+def addadmin(_adminsdict):
+    login = input("Input new admin's login: ")
+    password = input("Input new admin's password: ")
+    initials = input("Input new admin's initials: ")
+    _adminsdict[login] = [password, initials]
+
+
+def changerepairingstatus():
+    num = int(input("Input receipt number: "))
+    if num in receiptsdict.keys():
+        status = int(input("Choose the status: \n(1. Repairing  2. Done  3.Issued)\n"))
+        receiptsdict.get(num)._status = Receipt.listOfStatuses[status - 1]
+    else:
+        print("Unknown number")
+
+
+def changedateofrepair():
+    num = int(input("Input receipt number: "))
+    if num in receiptsdict.keys():
+        newdate = input("Input date in format \"YYYY-MM-DD\": ")
+        receiptsdict.get(num)._dateOfRepair = newdate
+    else:
+        print("Unknown number")
+
+
 def receiptsinfo():
-    print(list(receiptsdict.keys()))
+    # print(list(receiptsdict.keys()))
 
     info = input("Enter your receipt's number or initials: ")
 
@@ -163,7 +259,7 @@ def menu():
     print("\nChoose an action:")
     print("1. Create repair request")
     print("2. Show info about receipt(s)")
-    print("3. Print")
+    print("3. Administration panel")
 
     sw = int(input())
 
@@ -172,7 +268,7 @@ def menu():
     elif sw == 2:
         receiptsinfo()
     elif sw == 3:
-        receiptsprint(0)
+        administrationpanel()
     else:
         print("Please, enter the correct number")
         return 0
