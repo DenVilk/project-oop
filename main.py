@@ -1,6 +1,6 @@
 import datetime
 import random
-
+import dbscripts
 
 class Device:
 
@@ -51,15 +51,15 @@ class TV(Device):
 
 class Receipt:
 
-    def __init__(self, num, typeofproduct, dateofreceiving, dateofrepair, initials, status):
+    def __init__(self, num, typeofdevice, dateofreceiving, dateofrepair, initials, status):
         self._num = num
-        self._typeOfProduct = typeofproduct
+        self._typeOfDevice = typeofdevice
         self._dateOfReceiving = dateofreceiving
         self._dateOfRepair = dateofrepair
         self._initials = initials
         self._status = status
 
-    listOfProducts = [Phone, Notebook, TV]
+    listOfProducts = ["Phone", "Notebook", "TV"]
     listOfStatuses = ["Repairing", "Done", "Issued"]
 
     # def __setattr__(self, key, value):
@@ -75,7 +75,7 @@ class Receipt:
     #     return self._dateOfRepair
 
     def __str__(self):
-        return f"\nNumber of receipt: {self._num}\nType of product: {self._typeOfProduct}\nDate of receiving: " \
+        return f"\nNumber of receipt: {self._num}\nType of product: {self._typeOfDevice}\nDate of receiving: " \
                f"{self._dateOfReceiving}, Date of repair: {self._dateOfRepair}\nInitials: {self._initials}\nStatus: " \
                f"{self._status}"
 
@@ -93,45 +93,60 @@ receiptsdict = {1: Receipt(1, Phone("Xiaomi", "Android", "MIUI is shit pls help"
 
 
 def createrepairrequest():
+
     initials = input("Please, input your initials: ")
 
     print("Choose the type of product you want to repair: ")
     for i in range(len(Receipt.listOfProducts)):
-        print(f"{i + 1}. {Receipt.listOfProducts[i].name}")
-    typeofproduct = Receipt.listOfProducts[int(input()) - 1]
+        print(f"{i + 1}. {Receipt.listOfProducts[i]}")
+    typeofdevice = Receipt.listOfProducts[int(input()) - 1]
 
     mark = input("Input mark: ")
     description = input("Input description: ")
 
     d = None
 
-    if typeofproduct is Phone:
+    os = "NULL"
+    dateofmanufacturing = "NULL"
+    diagonal = "NULL"
+
+    if typeofdevice == "Phone":
         os = input("Input OS: ")
         d = Phone(mark, os, description)
 
-    if typeofproduct is Notebook:
+    if typeofdevice == "Notebook":
         os = input("Input OS: ")
         dateofmanufacturing = input("Input date of manufacturing: ")
         d = Notebook(mark, os, dateofmanufacturing, description)
 
-    if typeofproduct is TV:
-        diagonal = input("Input diagonal: ")
+    if typeofdevice == "TV":
+        diagonal = int(input("Input diagonal: "))
         d = TV(mark, diagonal, description)
 
-    typeofproduct = d
+    typeofdevice = d
 
     dateofreceiving = datetime.date.isoformat(datetime.date.today())
-    status = "repairing"
+    status = "NULL"
 
     if not receiptsdict.keys():
         num = 1
     else:
         num = list(receiptsdict.keys())[-1] + 1
 
-    dateofrepair = datetime.date.today() + datetime.timedelta(random.randint(1, 5))
+    dateofrepair = datetime.date.isoformat(datetime.date.today() + datetime.timedelta(random.randint(1, 5)))
 
-    r = Receipt(num, typeofproduct, dateofreceiving, dateofrepair, initials, status)
-
+    # typeofdevice = "NULL"
+    # mark = "NULL"
+    # description = "NULL"
+    # initials = "NULL"
+    r = Receipt(num, typeofdevice, dateofreceiving, dateofrepair, initials, status)
+    create_receipt = f"""
+        INSERT INTO
+          receipts (typeofdevice, mark, OS, dateofmanufacturing, diagonal, description, dateofreceiving, dateofrepair, initials, status)
+        VALUES
+          ({typeofdevice}, {mark}, {os}, {dateofmanufacturing}, {diagonal}, {description}, {dateofreceiving}, {dateofrepair}, {initials}, {status});
+        """
+    dbscripts.execute_query(dbscripts.connection, create_receipt)
     receiptsdict[num] = r
 
     print("Your repair request is created succefully.")
