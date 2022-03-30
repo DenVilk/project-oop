@@ -21,7 +21,7 @@ class Vibor:
     def Vib(self):
 
         with open('file_name.txt', 'a+') as file:
-            self.Vibor = input("Выберете технику: ")
+            self.Vibor = input("Напишите ваш выбор(ноутбук, телефон, телевизор): ")
             print('Тип изделия: ', self.Vibor, file=file)
             self.product_type = ['ноутбук', 'телефон', 'телевизор']
 
